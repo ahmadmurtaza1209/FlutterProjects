@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:agora_uikit/agora_uikit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:exd_social/controller/create_post_screen_controller.dart';
 import 'package:exd_social/controller/singup_screen_controller.dart';
@@ -62,7 +63,8 @@ class _PostScreenState extends State<PostScreen> {
         backgroundColor: Colors.white,
         drawer: Drawer(
           width: width * 0.65,
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             // ignore: prefer_const_literals_to_create_immutables
             children: [
               FutureBuilder(
@@ -170,6 +172,34 @@ class _PostScreenState extends State<PostScreen> {
                   size: 25,
                   color: Color.fromARGB(255, 227, 97, 41),
                 ),
+              ),
+              Expanded(child: Center()),
+              Divider(
+                thickness: 0.5,
+                height: height * 0.01,
+              ),
+              ListTile(
+                onTap: () {
+                  Navigator.pop(context);
+                  Get.to(openAppSettings());
+                },
+                leading: Icon(
+                  CupertinoIcons.info_circle,
+                  size: 25,
+                  color: Color.fromARGB(255, 227, 97, 41),
+                ),
+                title: Text(
+                  "App info",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 227, 97, 41)),
+                ),
+                // trailing: Icon(
+                //   Icons.arrow_forward_ios_rounded,
+                //   size: 25,
+                //   color: Color.fromARGB(255, 227, 97, 41),
+                // ),
               ),
               ListTile(
                 onTap: () {
