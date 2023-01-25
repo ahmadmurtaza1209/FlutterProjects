@@ -27,13 +27,24 @@ class PostScreen extends StatefulWidget {
 }
 
 class _PostScreenState extends State<PostScreen> {
-  final GlobalKey<ScaffoldState> _key = GlobalKey();
   // SignUpScreenController controller = Get.put(SignUpScreenController());
   User? currentuser = FirebaseAuth.instance.currentUser;
-  CollectionReference userRefernce =
-      FirebaseFirestore.instance.collection("users");
+
   CollectionReference postReference =
       FirebaseFirestore.instance.collection("post");
+
+  CollectionReference userRefernce =
+      FirebaseFirestore.instance.collection("users");
+
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPost();
+  }
+
   Stream<List<PostModel>> getPost() async* {
     List<PostModel> postList = [];
     QuerySnapshot ref = await postReference.get();
@@ -44,13 +55,6 @@ class _PostScreenState extends State<PostScreen> {
       postList.add(post);
     }
     yield postList;
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getPost();
   }
 
   @override
@@ -355,12 +359,15 @@ class _PostScreenState extends State<PostScreen> {
                           ),
                         );
                       } else if (snapshot.hasError) {
-                        return Center(
-                          child: Icon(
-                            Icons.error_outline_rounded,
-                            size: 40,
-                            color: Color.fromARGB(255, 227, 97, 41),
-                          ),
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Something went wrong!",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
                         );
                       }
                       return Container();
@@ -524,20 +531,17 @@ class _PostScreenState extends State<PostScreen> {
                                             ],
                                           ),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                              left: width * 0.04,
-                                              right: width * 0.04),
-                                          child: Divider(
-                                            height: height * 0.006,
-                                            thickness: 0.6,
-                                            // color: Colors.grey,
-                                          ),
+                                        Divider(
+                                          height: height * 0.006,
+                                          thickness: 0.6,
+                                          indent: width * 0.04,
+                                          endIndent: width * 0.04,
+                                          // color: Colors.grey,
                                         ),
                                         Padding(
                                           padding: EdgeInsets.only(
-                                            left: width * 0.08,
-                                            right: width * 0.08,
+                                            left: width * 0.06,
+                                            right: width * 0.06,
                                             top: height * 0.01,
                                             bottom: height * 0.01,
                                           ),
@@ -584,7 +588,7 @@ class _PostScreenState extends State<PostScreen> {
                                                     children: [
                                                       Icon(
                                                         Icons
-                                                            .messenger_outline_rounded,
+                                                            .messenger_outline_outlined,
                                                         color: Colors.grey,
                                                       ),
                                                       SizedBox(
@@ -592,6 +596,30 @@ class _PostScreenState extends State<PostScreen> {
                                                       ),
                                                       Text(
                                                         "Comment",
+                                                        style: TextStyle(
+                                                            color: Colors.grey),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              InkWell(
+                                                splashColor: Colors.transparent,
+                                                highlightColor:
+                                                    Colors.transparent,
+                                                onTap: () {},
+                                                child: Container(
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.send_outlined,
+                                                        color: Colors.grey,
+                                                      ),
+                                                      SizedBox(
+                                                        width: width * 0.02,
+                                                      ),
+                                                      Text(
+                                                        "Share",
                                                         style: TextStyle(
                                                             color: Colors.grey),
                                                       )
@@ -616,12 +644,15 @@ class _PostScreenState extends State<PostScreen> {
                           ),
                         );
                       } else if (snapshot.hasError) {
-                        return Center(
-                          child: Icon(
-                            Icons.error_outline_rounded,
-                            size: 40,
-                            color: Color.fromARGB(255, 227, 97, 41),
-                          ),
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Something went wrong!",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
                         );
                       }
 

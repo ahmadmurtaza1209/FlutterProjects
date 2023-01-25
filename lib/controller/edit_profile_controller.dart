@@ -11,10 +11,6 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import '../database/firebase_auth.dart';
 
 class EditProfileController extends GetxController {
-  TextEditingController genderController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
-  TextEditingController dateOfBirthController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
   File? imageFile;
   File? coverImageFile;
   CroppedFile? cropFile;

@@ -554,7 +554,8 @@ class _SingUpScreenState extends State<SingUpScreen> {
                             fullName: data.nameController.text,
                             phoneNumber: data.phoneController.text,
                             gender: data.genderController.text,
-                            imageUrl: data.imageUrl,
+                            imageUrl: data.imageUrl, birthday: 'N/A',
+                            coverImageUrl: '', homeTown: 'N/A',
                             // profileImage: '',
                             // profileImage: data.profileImageUrl,
                           );

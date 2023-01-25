@@ -16,10 +16,10 @@ class Auth {
     required String fullName,
     required String phoneNumber,
     required String gender,
-    // required String province,
-    // required String city,
+    required String homeTown,
+    required String birthday,
     required String imageUrl,
-    // required String coverImage,
+    required String coverImageUrl,
     // required String gender
   }) async {
     bool status = false;
@@ -42,9 +42,9 @@ class Auth {
           // "country": country,
           // "province": province,
           "gender": gender,
-          // "city": city,
-          // "profileImage": profileImage,
-          // "coverImage": coverImage
+          "homeTown": homeTown,
+          "birthday": birthday,
+          "coverImage": coverImageUrl
         };
         await FirebaseChatCore.instance.createUserInFirestore(
           types.User(

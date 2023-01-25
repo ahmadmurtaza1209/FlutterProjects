@@ -102,7 +102,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Container(
                                   height: height * 0.25,
                                   width: width,
-                                  color: Colors.red,
+                                  // color: Colors.red,
+                                  child: Image.network(
+                                    userData.coverImageUrl,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                                 Container(
                                   margin: EdgeInsets.only(
@@ -146,7 +150,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 InkWell(
                                   onTap: () {
-                                    Get.to(EditProfileScreen());
+                                    Get.to(EditProfileScreen(
+                                      detail: userData,
+                                    ));
                                   },
                                   child: Icon(
                                     Icons.edit_outlined,
@@ -234,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 title: Text(
-                                  userData.metadata.phone,
+                                  userData.phone,
                                   style: TextStyle(
                                       color: Colors.black, fontSize: 16),
                                 ),
@@ -289,7 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 title: Text(
-                                  userData.metadata.gender,
+                                  userData.gender,
                                   style: TextStyle(
                                       color: Colors.black, fontSize: 16),
                                 ),
@@ -324,7 +330,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 title: Text(
-                                  "August 12,2000",
+                                  userData.birthday,
                                   style: TextStyle(
                                       color: Colors.black, fontSize: 16),
                                 ),
@@ -379,7 +385,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 title: Text(
-                                  "Shadman",
+                                  userData.homeTown,
                                   style: TextStyle(
                                       color: Colors.black, fontSize: 16),
                                 ),
@@ -430,12 +436,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       );
                     } else if (snapshot.hasError) {
-                      Center(
-                        child: Icon(
-                          Icons.error_outline_rounded,
-                          size: 40,
-                          color: Color.fromARGB(255, 227, 97, 41),
-                        ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Something went wrong!",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ],
                       );
                     }
                     return Container();
@@ -670,12 +679,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         },
                       );
                     } else if (snapshot.hasError) {
-                      return Center(
-                        child: Icon(
-                          Icons.error_outline_rounded,
-                          size: 40,
-                          color: Color.fromARGB(255, 227, 97, 41),
-                        ),
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Something went wrong!",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ],
                       );
                     }
                     return Container();

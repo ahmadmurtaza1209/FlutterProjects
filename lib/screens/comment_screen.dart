@@ -47,6 +47,7 @@ class _CommentScreenState extends State<CommentScreen> {
         .onError((error, stackTrace) => print("failed"));
   }
 
+  List<CommentModel> checkList = [];
   Stream<List<CommentModel>> getComment() async* {
     List<CommentModel> commentList = [];
     QuerySnapshot ref = await commentReference
@@ -56,6 +57,7 @@ class _CommentScreenState extends State<CommentScreen> {
       CommentModel comment =
           CommentModel.fromjson(ref.docs[i].data() as Map<String, dynamic>);
       commentList.add(comment);
+      checkList = commentList;
     }
     yield commentList;
   }

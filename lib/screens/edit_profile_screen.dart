@@ -1,19 +1,49 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:exd_social/controller/edit_profile_controller.dart';
+import 'package:exd_social/database/firebase_auth.dart';
+import 'package:exd_social/models/user_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({Key? key}) : super(key: key);
+  final UserModel detail;
+  const EditProfileScreen({Key? key, required this.detail}) : super(key: key);
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  TextEditingController genderController = TextEditingController();
+  TextEditingController homeTownController = TextEditingController();
+  TextEditingController dateOfBirthController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  User? currentuser = FirebaseAuth.instance.currentUser;
+  Future updateProfile() async {
+    DocumentReference user = Auth.userRefernce.doc(currentuser!.uid);
+    await user.update({
+      "phone": phoneController.text,
+      "homeTown": homeTownController.text,
+      "birthday": dateOfBirthController.text,
+      "gender": genderController.text,
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    genderController.text = widget.detail.gender;
+    homeTownController.text = widget.detail.homeTown;
+    dateOfBirthController.text = widget.detail.birthday;
+    phoneController.text = widget.detail.phone;
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -45,7 +75,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            updateProfile();
+            Navigator.pop(context);
+          },
           backgroundColor: Color.fromARGB(255, 227, 97, 41),
           child: Icon(
             Icons.upload_rounded,
@@ -65,11 +98,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   Container(
                     child: Stack(
                       children: [
-                        Container(
-                          height: height * 0.25,
-                          width: width,
-                          color: Colors.red,
-                        ),
+                        data.coverImageFile != null
+                            ? Container(
+                                height: height * 0.25,
+                                width: width,
+                                // color: Colors.red,
+                                child: Image.file(
+                                  data.coverImageFile!,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Container(
+                                height: height * 0.25,
+                                width: width,
+                                // color: Colors.red,
+                                child: Image.network(
+                                  widget.detail.metadata.coverImageUrl,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                         /////// cover image button
                         Padding(
                           padding: EdgeInsets.only(
@@ -90,6 +137,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       // ignore: prefer_const_literals_to_create_immutables
                                       children: [
                                         ListTile(
+                                          onTap: () {
+                                            data.pickCoverImageFromCamera();
+                                            Navigator.pop(context);
+                                          },
                                           minLeadingWidth: 20,
                                           leading: Icon(
                                             Icons.camera_alt_outlined,
@@ -106,6 +157,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           ),
                                         ),
                                         ListTile(
+                                          onTap: () {
+                                            data.pickCoverImageFromGallery();
+                                            Navigator.pop(context);
+                                          },
                                           minLeadingWidth: 20,
                                           leading: Icon(
                                             Icons.photo_library_rounded,
@@ -140,22 +195,49 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                           ),
                         ),
-                        Container(
-                          margin: EdgeInsets.only(
-                              left: width * 0.03, top: height * 0.12),
-                          height: height * 0.18,
-                          width: width * 0.4,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            border: Border.all(
-                                width: 5,
-                                color: Color.fromARGB(255, 255, 255, 255)),
-                            color: Colors.green,
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                        ),
+                        data.imageFile != null
+                            ? Container(
+                                margin: EdgeInsets.only(
+                                    left: width * 0.03, top: height * 0.12),
+                                height: height * 0.18,
+                                width: width * 0.4,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  border: Border.all(
+                                      width: 5,
+                                      color:
+                                          Color.fromARGB(255, 255, 255, 255)),
+                                  // color: Colors.green,
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: Image.file(
+                                    data.imageFile!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                margin: EdgeInsets.only(
+                                    left: width * 0.03, top: height * 0.12),
+                                height: height * 0.18,
+                                width: width * 0.4,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  border: Border.all(
+                                      width: 5,
+                                      color:
+                                          Color.fromARGB(255, 255, 255, 255)),
+                                  // color: Colors.green,
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: Image.network(
+                                    widget.detail.imageUrl,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
 
                         ///// profile image button
                         Padding(
@@ -179,6 +261,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         ListTile(
                                           onTap: () {
                                             data.pickProfileImageFromCamera();
+                                            Navigator.pop(context);
                                           },
                                           minLeadingWidth: 20,
                                           leading: Icon(
@@ -198,6 +281,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         ListTile(
                                           onTap: () {
                                             data.pickProfileImageFromGallery();
+                                            Navigator.pop(context);
                                           },
                                           minLeadingWidth: 20,
                                           leading: Icon(
@@ -243,7 +327,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         top: height * 0.02),
                     child: Container(
                       child: Text(
-                        "Ahmad",
+                        widget.detail.firstName,
                         style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -292,7 +376,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                         title: Text(
-                          "ahmadmurtaza1209@gmail.com",
+                          widget.detail.metadata.email,
                           style: TextStyle(color: Colors.black, fontSize: 16),
                         ),
                         subtitle: Text(
@@ -325,7 +409,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                         title: TextFormField(
-                          // controller: commentController,
+                          controller: phoneController,
                           autofocus: true,
                           style: TextStyle(color: Colors.black, fontSize: 16),
                           maxLines: null,
@@ -345,6 +429,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         trailing: InkWell(
                             splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
                             onTap: () {},
                             child: Icon(
                               Icons.edit,
@@ -395,7 +480,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                         title: TextFormField(
-                          // controller: commentController,
+                          controller: genderController,
                           style: TextStyle(color: Colors.black, fontSize: 16),
                           maxLines: null,
                           textCapitalization: TextCapitalization.words,
@@ -414,6 +499,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         trailing: InkWell(
                             splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
                             onTap: () {},
                             child: Icon(
                               Icons.edit,
@@ -444,7 +530,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                         title: TextFormField(
-                          // controller: commentController,
+                          controller: dateOfBirthController,
                           style: TextStyle(color: Colors.black, fontSize: 16),
                           maxLines: null,
                           textCapitalization: TextCapitalization.words,
@@ -463,6 +549,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         trailing: InkWell(
                             splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
                             onTap: () {},
                             child: Icon(
                               Icons.edit,
@@ -513,7 +600,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                           ),
                           title: TextFormField(
-                            // controller: commentController,
+                            controller: homeTownController,
                             style: TextStyle(color: Colors.black, fontSize: 16),
                             maxLines: null,
                             textCapitalization: TextCapitalization.sentences,
@@ -534,6 +621,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           trailing: InkWell(
                               splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
                               onTap: () {},
                               child: Icon(
                                 Icons.edit,
@@ -575,6 +663,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                           trailing: InkWell(
                               splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
                               onTap: () {},
                               child: Icon(
                                 Icons.edit,
