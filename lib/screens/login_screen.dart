@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       border: InputBorder.none,
                                       constraints: BoxConstraints(
                                         maxHeight: height * 0.045,
-                                        maxWidth: width * 0.63,
+                                        maxWidth: width * 0.8,
                                       ),
                                       contentPadding: EdgeInsets.only(
                                           left: width * 0.15,
@@ -211,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       border: InputBorder.none,
                                       constraints: BoxConstraints(
                                         maxHeight: height * 0.045,
-                                        maxWidth: width * 0.63,
+                                        maxWidth: width * 0.8,
                                       ),
                                       contentPadding:
                                           EdgeInsets.only(left: width * 0.15),

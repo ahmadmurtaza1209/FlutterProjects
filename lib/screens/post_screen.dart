@@ -4,6 +4,7 @@ import 'package:agora_uikit/agora_uikit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:exd_social/controller/create_post_screen_controller.dart';
 import 'package:exd_social/controller/singup_screen_controller.dart';
+import 'package:exd_social/controller/token_controller.dart';
 import 'package:exd_social/database/firebase_auth.dart';
 import 'package:exd_social/models/post_model.dart';
 import 'package:exd_social/models/user_model.dart';
@@ -18,6 +19,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class PostScreen extends StatefulWidget {
   const PostScreen({Key? key}) : super(key: key);
@@ -28,6 +30,7 @@ class PostScreen extends StatefulWidget {
 
 class _PostScreenState extends State<PostScreen> {
   // SignUpScreenController controller = Get.put(SignUpScreenController());
+  TokenController controller = Get.put(TokenController());
   User? currentuser = FirebaseAuth.instance.currentUser;
 
   CollectionReference postReference =
@@ -47,7 +50,8 @@ class _PostScreenState extends State<PostScreen> {
 
   Stream<List<PostModel>> getPost() async* {
     List<PostModel> postList = [];
-    QuerySnapshot ref = await postReference.get();
+    QuerySnapshot ref =
+        await postReference.orderBy("dateTime", descending: true).get();
     for (var i = 0; i < ref.docs.length; i++) {
       PostModel post =
           // PostModel.fromDocumentSnapshot(documentSnapshot: ref.docs[i]);
@@ -55,6 +59,11 @@ class _PostScreenState extends State<PostScreen> {
       postList.add(post);
     }
     yield postList;
+  }
+
+  Stream getProfile() async* {
+    DocumentSnapshot user = await userRefernce.doc(currentuser!.uid).get();
+    yield user;
   }
 
   @override
@@ -111,6 +120,7 @@ class _PostScreenState extends State<PostScreen> {
                   }),
               ListTile(
                 onTap: () {
+                  Navigator.pop(context);
                   Get.to(ProfileScreen());
                 },
                 leading: Icon(
@@ -177,6 +187,7 @@ class _PostScreenState extends State<PostScreen> {
                   color: Color.fromARGB(255, 227, 97, 41),
                 ),
               ),
+              // Text("${controller.token}"),
               Expanded(child: Center()),
               Divider(
                 thickness: 0.5,
@@ -261,8 +272,8 @@ class _PostScreenState extends State<PostScreen> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FutureBuilder(
-                    future: userRefernce.doc(currentuser!.uid).get(),
+                StreamBuilder(
+                    stream: getProfile(),
                     builder: (BuildContext context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(
@@ -451,6 +462,12 @@ class _PostScreenState extends State<PostScreen> {
                                                       ),
                                                       Text(
                                                         screenData.dateTime,
+
+                                                        // DateTime postdate = DateTime.parse(screenData
+                                                        //               .dateTime);
+                                                        //       DateFormat(
+                                                        //               'dd-MM-yy  kk:mm')
+                                                        //           .format(postdate),
                                                         style: TextStyle(
                                                             fontSize: 13,
                                                             color:
@@ -472,7 +489,11 @@ class _PostScreenState extends State<PostScreen> {
                                                         Colors.transparent,
                                                     highlightColor:
                                                         Colors.transparent,
-                                                    onPressed: () {},
+                                                    onPressed: () {
+                                                      postReference
+                                                          .doc(screenData.id)
+                                                          .delete();
+                                                    },
                                                     icon: Icon(
                                                       Icons.close_rounded,
                                                       size: 25,

@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final UserModel detail;
@@ -410,7 +411,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         title: TextFormField(
                           controller: phoneController,
-                          autofocus: true,
+                          // autofocus: true,
                           style: TextStyle(color: Colors.black, fontSize: 16),
                           maxLines: null,
                           textCapitalization: TextCapitalization.words,
@@ -418,7 +419,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           keyboardType: TextInputType.multiline,
                           decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: "03073662644",
+                              hintText: "03004567889",
                               hintStyle: TextStyle(fontSize: 16)),
                         ),
                         subtitle: Text(
@@ -538,7 +539,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           keyboardType: TextInputType.multiline,
                           decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: "August 12,2000",
+                              hintText: "12-04-2000",
                               hintStyle: TextStyle(fontSize: 16)),
                         ),
                         subtitle: Text(
@@ -550,9 +551,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         trailing: InkWell(
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,
-                            onTap: () {},
+                            onTap: () async {
+                              var pickDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(1970),
+                                lastDate: DateTime(2050),
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: Theme.of(context).copyWith(
+                                      colorScheme: ColorScheme.light(
+                                        primary: Color.fromARGB(
+                                            255, 227, 97, 41), // <-- SEE HERE
+                                        onPrimary: Colors.black, // <-- SEE HERE
+                                        onSurface: Colors.grey, // <-- SEE HERE
+                                      ),
+                                      textButtonTheme: TextButtonThemeData(
+                                        style: TextButton.styleFrom(
+                                          primary: Color.fromARGB(255, 227, 97,
+                                              41), // button text color
+                                        ),
+                                      ),
+                                    ),
+                                    child: child!,
+                                  );
+                                },
+                              );
+
+                              if (pickDate != null) {
+                                setState(() {
+                                  dateOfBirthController.text =
+                                      DateFormat("dd-MM-yyyy").format(pickDate);
+                                });
+                              }
+                            },
                             child: Icon(
-                              Icons.edit,
+                              Icons.calendar_today_rounded,
                               size: 25,
                               color: Color.fromARGB(166, 158, 158, 158),
                             )),
@@ -656,7 +690,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             style: TextStyle(color: Colors.black, fontSize: 16),
                           ),
                           subtitle: Text(
-                            "Current Location",
+                            "Last Location",
                             style: TextStyle(
                                 color: Color.fromARGB(255, 227, 97, 41),
                                 fontSize: 14),

@@ -164,54 +164,67 @@ class _CommentScreenState extends State<CommentScreen> {
                         ),
                       );
                     } else if (snapshot.hasData) {
-                      return ListView.builder(
-                          itemCount: snapshot.data!.length,
-                          physics: ScrollPhysics(),
-                          shrinkWrap: true,
-                          itemBuilder: (BuildContext context, index) {
-                            CommentModel screenData = snapshot.data![index];
-                            return Padding(
-                              padding: EdgeInsets.only(left: width * 0.01),
-                              child: ListTile(
-                                horizontalTitleGap: 8,
-                                leading: Container(
-                                  height: height * 0.037,
-                                  width: width * 0.08,
-                                  decoration: BoxDecoration(
-                                      // color: Colors.red,
-                                      // borderRadius: BorderRadius.circular(100)
-                                      shape: BoxShape.circle),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(100),
-                                    child: Image.network(
-                                      screenData.profileImage,
-                                      fit: BoxFit.cover,
+                      if (checkList.isNotEmpty) {
+                        return ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            physics: ScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (BuildContext context, index) {
+                              CommentModel screenData = snapshot.data![index];
+                              return Padding(
+                                padding: EdgeInsets.only(left: width * 0.01),
+                                child: ListTile(
+                                  horizontalTitleGap: 8,
+                                  leading: Container(
+                                    height: height * 0.037,
+                                    width: width * 0.08,
+                                    decoration: BoxDecoration(
+                                        // color: Colors.red,
+                                        // borderRadius: BorderRadius.circular(100)
+                                        shape: BoxShape.circle),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(100),
+                                      child: Image.network(
+                                        screenData.profileImage,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
+                                  title: Text(
+                                    screenData.userName,
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: Color.fromARGB(255, 227, 97, 41),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  subtitle: Text(
+                                    screenData.commentText,
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 16),
+                                  ),
+                                  trailing: Text(
+                                    screenData.dateTime,
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: Color.fromARGB(255, 227, 97, 41),
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
-                                title: Text(
-                                  screenData.userName,
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      color: Color.fromARGB(255, 227, 97, 41),
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Text(
-                                  screenData.commentText,
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 16),
-                                ),
-                                trailing: Text(
-                                  screenData.dateTime,
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color.fromARGB(255, 227, 97, 41),
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            );
-                            //
-                          });
+                              );
+                              //
+                            });
+                      } else {
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "No comments yet",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
+                        );
+                      }
                     } else if (snapshot.hasError) {
                       return Row(
                         crossAxisAlignment: CrossAxisAlignment.center,

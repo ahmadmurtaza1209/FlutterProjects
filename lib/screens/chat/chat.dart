@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:exd_social/controller/token_controller.dart';
+import 'package:exd_social/models/user_model.dart';
 import 'package:exd_social/screens/chat/agora_screen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -17,11 +20,11 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({
+  ChatPage({
     super.key,
     required this.room,
   });
-
+  String? myToken;
   final types.Room room;
 
   @override
@@ -29,7 +32,42 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  TokenController controller = Get.put(TokenController());
   bool _isAttachmentUploading = false;
+  String authKey =
+      "key=AAAAt2o5n3c:APA91bG1QgDx9-3MZH3h6DNghNPnP2S0AcBMIfAKzrwzykq7twI0PSvrzc18kn32wMWEtjg206U0_B1gzqheOO-NM-rsbJolWeoqXdUSMadZYXsgY18ANJxDI9UdX3_Yvio6j1Rg3Wn3";
+  String otherUserToken =
+      "dIsrLt6NRiCsn05gBUbQmg:APA91bHVUjU2udP82NbttolKeDoP_rCoBdXLGX6pGkYxImgLsf8ZkvptB5cwJ9BVP_P4mvmqQHbyKKbzzhOeyDjCRcH7ekol37tzCrP7RzIzU-DWqsBQjTjD6zw3tay7ENSd39LWWn0d";
+  Future messageNotification() async {
+    Uri uri = Uri.parse("https://fcm.googleapis.com/fcm/send");
+    Map<String, dynamic> body = {
+      "to": otherUserToken,
+      "notification": {
+        "title": widget.room.name.toString().capitalizeFirst,
+        "body": "New Notification"
+      },
+      "data": <String, dynamic>{
+        "room": widget.room,
+        "title": "Title of Your Notification",
+        "isNotify": 0
+      }
+    };
+    http.Response response = await http.post(uri,
+        body: jsonEncode(body),
+        headers: <String, String>{
+          "Content-Type": "application/json",
+          "Authorization": authKey
+        });
+
+    print(response.statusCode);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.myToken = controller.token;
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -275,7 +313,8 @@ class _ChatPageState extends State<ChatPage> {
     FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
   }
 
-  void _handleSendPressed(types.PartialText message) {
+  void _handleSendPressed(types.PartialText message) async {
+    await messageNotification();
     FirebaseChatCore.instance.sendMessage(
       message,
       widget.room.id,

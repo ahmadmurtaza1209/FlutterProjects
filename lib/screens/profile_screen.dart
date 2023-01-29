@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../models/post_model.dart';
 
@@ -30,14 +31,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       FirebaseFirestore.instance.collection("post");
   Stream<List<PostModel>> getPost() async* {
     List<PostModel> postList = [];
-    QuerySnapshot ref =
-        await postReference.where("uid", isEqualTo: currentuser!.uid).get();
+    QuerySnapshot ref = await postReference
+        .where("uid", isEqualTo: currentuser!.uid)
+        // .orderBy("dateTime", descending: true)
+        .get();
     for (var i = 0; i < ref.docs.length; i++) {
-      PostModel post = PostModel.fromjson(
-          ref.docs[i].data() as Map<String, dynamic>, ref.docs[i].id);
+      PostModel post =
+          PostModel.fromDocumentSnapshot(documentSnapshot: ref.docs[i]);
       postList.add(post);
     }
     yield postList;
+  }
+
+  Stream getProfile() async* {
+    DocumentSnapshot user = await userRefernce.doc(currentuser!.uid).get();
+    yield user;
   }
 
   @override
@@ -78,8 +86,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              FutureBuilder(
-                  future: userRefernce.doc(currentuser!.uid).get(),
+              StreamBuilder(
+                  stream: getProfile(),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(
@@ -425,7 +433,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       color: Colors.black, fontSize: 16),
                                 ),
                                 subtitle: Text(
-                                  "Current Location",
+                                  "Last Location",
                                   style: TextStyle(
                                       color: Color.fromARGB(255, 227, 97, 41),
                                       fontSize: 14),
@@ -692,6 +700,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     }
                     return Container();
                   }),
+              SizedBox(
+                height: height * 0.03,
+              )
             ],
           );
         },
