@@ -25,6 +25,7 @@ class UserModel {
     coverImageUrl = documentSnapshot["coverImage"] ?? "";
     birthday = documentSnapshot["birthday"] ?? "N/A";
     homeTown = documentSnapshot["homeTown"] ?? "N/A";
+    location = documentSnapshot["location"] ?? "";
     // address = data["address"] ?? "";
     // location = data["location"] ?? "";
     // dateOfBirth = data["dateOfBirth"] ?? "";
@@ -42,6 +43,7 @@ class UserModel {
     coverImageUrl = data["coverImage"] ?? "";
     birthday = data["birthday"] ?? "N/A";
     homeTown = data["homeTown"] ?? "N/A";
+    location = data["location"] ?? "";
     // address = data["address"] ?? "";
     // location = data["location"] ?? "";
     // dateOfBirth = data["dateOfBirth"] ?? "";
@@ -57,6 +59,7 @@ class UserModel {
   late final String coverImageUrl;
   late final String birthday;
   late final String homeTown;
+  late final String location;
   late MetaData metadata;
 
   Map<String, dynamic> tojson() {
@@ -69,6 +72,7 @@ class UserModel {
     data["coverImage"] = coverImageUrl;
     data["birthday"] = birthday;
     data["homeTown"] = homeTown;
+    data["location"] = location;
     // data["address"] = address;
     // data["location"] = location;
     // data["dateOfBirth"] = dateOfBirth;
@@ -94,6 +98,7 @@ class MetaData {
     coverImageUrl = documentSnapshot["coverImage"] ?? "";
     birthday = documentSnapshot["birthday"] ?? "N/A";
     homeTown = documentSnapshot["homeTown"] ?? "N/A";
+    location = documentSnapshot["location"] ?? "";
   }
 
   MetaData.fromjson(Map<String, dynamic> data) {
@@ -103,6 +108,7 @@ class MetaData {
     coverImageUrl = data["coverImage"] ?? "";
     birthday = data["birthday"] ?? "N/A";
     homeTown = data["homeTown"] ?? "N/A";
+    location = data["location"] ?? "";
   }
 
   late final String email;
@@ -111,6 +117,7 @@ class MetaData {
   late final String coverImageUrl;
   late final String birthday;
   late final String homeTown;
+  late final String location;
 
   Map<String, dynamic> tojson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
@@ -120,6 +127,7 @@ class MetaData {
     data["coverImage"] = coverImageUrl;
     data["birthday"] = birthday;
     data["homeTown"] = homeTown;
+    data["location"] = location;
 
     return data;
   }

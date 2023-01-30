@@ -29,16 +29,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   CollectionReference postReference =
       FirebaseFirestore.instance.collection("post");
+  List<PostModel> checkList = [];
   Stream<List<PostModel>> getPost() async* {
     List<PostModel> postList = [];
     QuerySnapshot ref = await postReference
         .where("uid", isEqualTo: currentuser!.uid)
-        // .orderBy("dateTime", descending: true)
+        .orderBy("dateTime", descending: true)
         .get();
     for (var i = 0; i < ref.docs.length; i++) {
       PostModel post =
           PostModel.fromDocumentSnapshot(documentSnapshot: ref.docs[i]);
       postList.add(post);
+      checkList = postList;
     }
     yield postList;
   }
@@ -148,8 +150,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Container(
+                                  width: width * 0.8,
+                                  // color: Colors.blue,
                                   child: Text(
                                     userData.firstName,
+                                    overflow: TextOverflow.clip,
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
@@ -428,7 +433,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 title: Text(
-                                  "Shadman Market",
+                                  userData.location,
                                   style: TextStyle(
                                       color: Colors.black, fontSize: 16),
                                 ),
@@ -475,217 +480,261 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       );
                     } else if (snapshot.hasData) {
-                      return ListView.builder(
-                        itemCount: snapshot.data!.length,
-                        shrinkWrap: true,
-                        physics: ScrollPhysics(),
-                        itemBuilder: (BuildContext context, index) {
-                          PostModel screenData = snapshot.data![index];
-                          return Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(left: width * 0.04),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                              height: height * 0.054,
-                                              width: width * 0.12,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                              ),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                                child: Image.network(
-                                                  screenData.profileImage,
-                                                  fit: BoxFit.cover,
+                      if (checkList.isNotEmpty) {
+                        return ListView.builder(
+                          itemCount: snapshot.data!.length,
+                          shrinkWrap: true,
+                          physics: ScrollPhysics(),
+                          itemBuilder: (BuildContext context, index) {
+                            PostModel screenData = snapshot.data![index];
+                            return Container(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.only(left: width * 0.04),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                                height: height * 0.054,
+                                                width: width * 0.12,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100),
                                                 ),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100),
+                                                  child: Image.network(
+                                                    screenData.profileImage,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                )),
+                                            SizedBox(
+                                              width: width * 0.03,
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  screenData.userName,
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 17),
+                                                ),
+                                                SizedBox(
+                                                  height: height * 0.005,
+                                                ),
+                                                Text(
+                                                  screenData.dateTime,
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: Color.fromARGB(
+                                                          255, 28, 70, 130)),
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(
+                                              bottom: height * 0.025),
+                                          child: IconButton(
+                                              splashColor: Colors.transparent,
+                                              onPressed: () {},
+                                              icon: Icon(
+                                                Icons.close_rounded,
+                                                size: 25,
+                                                color: Color.fromARGB(
+                                                    255, 62, 60, 60),
                                               )),
-                                          SizedBox(
-                                            width: width * 0.03,
-                                          ),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                screenData.userName,
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 17),
-                                              ),
-                                              SizedBox(
-                                                height: height * 0.005,
-                                              ),
-                                              Text(
-                                                screenData.dateTime,
-                                                style: TextStyle(
-                                                    fontSize: 13,
-                                                    color: Color.fromARGB(
-                                                        255, 28, 70, 130)),
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(
-                                            bottom: height * 0.025),
-                                        child: IconButton(
-                                            splashColor: Colors.transparent,
-                                            onPressed: () {},
-                                            icon: Icon(
-                                              Icons.close_rounded,
-                                              size: 25,
-                                              color: Color.fromARGB(
-                                                  255, 62, 60, 60),
-                                            )),
-                                      )
-                                    ],
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                screenData.postText.isNotEmpty
-                                    ? Padding(
-                                        padding: EdgeInsets.only(
-                                            left: width * 0.04,
-                                            right: width * 0.04,
-                                            top: height * 0.01,
-                                            bottom: height * 0.01),
-                                        child: Container(
+                                  screenData.postText.isNotEmpty
+                                      ? Padding(
+                                          padding: EdgeInsets.only(
+                                              left: width * 0.04,
+                                              right: width * 0.04,
+                                              top: height * 0.01,
+                                              bottom: height * 0.01),
+                                          child: Container(
+                                            child: Text(
+                                              screenData.postText,
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+                                        )
+                                      : Container(),
+                                  screenData.postImage.isNotEmpty
+                                      ? Container(
+                                          width: width,
+                                          child: Image.network(
+                                            screenData.postImage,
+                                            fit: BoxFit.fitHeight,
+                                          ),
+                                        )
+                                      : Container(),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        left: width * 0.04,
+                                        right: width * 0.04,
+                                        top: height * 0.01,
+                                        bottom: height * 0.01),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
                                           child: Text(
-                                            screenData.postText,
+                                            "1.2K",
                                             style:
-                                                TextStyle(color: Colors.black),
+                                                TextStyle(color: Colors.grey),
                                           ),
                                         ),
-                                      )
-                                    : Container(),
-                                screenData.postImage.isNotEmpty
-                                    ? Container(
-                                        width: width,
-                                        child: Image.network(
-                                          screenData.postImage,
-                                          fit: BoxFit.fitHeight,
-                                        ),
-                                      )
-                                    : Container(),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      left: width * 0.04,
-                                      right: width * 0.04,
+                                        Container(
+                                          child: Text(
+                                            "42 comments",
+                                            style:
+                                                TextStyle(color: Colors.grey),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        left: width * 0.04,
+                                        right: width * 0.04),
+                                    child: Divider(
+                                      height: height * 0.006,
+                                      thickness: 0.6,
+                                      // color: Colors.grey,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: width * 0.08,
+                                      right: width * 0.08,
                                       top: height * 0.01,
-                                      bottom: height * 0.01),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        child: Text(
-                                          "1.2K",
-                                          style: TextStyle(color: Colors.grey),
+                                      bottom: height * 0.01,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        InkWell(
+                                          splashColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () {},
+                                          child: Container(
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.thumb_up_alt_outlined,
+                                                  color: Colors.grey,
+                                                ),
+                                                SizedBox(
+                                                  width: width * 0.02,
+                                                ),
+                                                Text(
+                                                  "Like",
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
+                                                )
+                                              ],
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                      Container(
-                                        child: Text(
-                                          "42 comments",
-                                          style: TextStyle(color: Colors.grey),
+                                        InkWell(
+                                          splashColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () {
+                                            Get.to(CommentScreen(
+                                                detail: screenData));
+                                          },
+                                          child: Container(
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons
+                                                      .messenger_outline_rounded,
+                                                  color: Colors.grey,
+                                                ),
+                                                SizedBox(
+                                                  width: width * 0.02,
+                                                ),
+                                                Text(
+                                                  "Comment",
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
+                                                )
+                                              ],
+                                            ),
+                                          ),
                                         ),
-                                      )
-                                    ],
+                                        InkWell(
+                                          splashColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () {},
+                                          child: Container(
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.send_outlined,
+                                                  color: Colors.grey,
+                                                ),
+                                                SizedBox(
+                                                  width: width * 0.02,
+                                                ),
+                                                Text(
+                                                  "Share",
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      left: width * 0.04, right: width * 0.04),
-                                  child: Divider(
-                                    height: height * 0.006,
-                                    thickness: 0.6,
+                                  Divider(
+                                    height: height * 0.02,
+                                    thickness: 9,
                                     // color: Colors.grey,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    left: width * 0.08,
-                                    right: width * 0.08,
-                                    top: height * 0.01,
-                                    bottom: height * 0.01,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      InkWell(
-                                        splashColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        onTap: () {},
-                                        child: Container(
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.thumb_up_alt_outlined,
-                                                color: Colors.grey,
-                                              ),
-                                              SizedBox(
-                                                width: width * 0.02,
-                                              ),
-                                              Text(
-                                                "Like",
-                                                style: TextStyle(
-                                                    color: Colors.grey),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      InkWell(
-                                        splashColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        onTap: () {
-                                          Get.to(CommentScreen(
-                                              detail: screenData));
-                                        },
-                                        child: Container(
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.messenger_outline_rounded,
-                                                color: Colors.grey,
-                                              ),
-                                              SizedBox(
-                                                width: width * 0.02,
-                                              ),
-                                              Text(
-                                                "Comment",
-                                                style: TextStyle(
-                                                    color: Colors.grey),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Divider(
-                                  height: height * 0.02,
-                                  thickness: 9,
-                                  // color: Colors.grey,
-                                )
-                              ],
+                                  )
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      } else {
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "No posts",
+                              style: TextStyle(fontSize: 20),
                             ),
-                          );
-                        },
-                      );
+                          ],
+                        );
+                      }
                     } else if (snapshot.hasError) {
                       return Row(
                         crossAxisAlignment: CrossAxisAlignment.center,

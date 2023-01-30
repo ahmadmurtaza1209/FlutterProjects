@@ -20,7 +20,7 @@ class Auth {
     required String birthday,
     required String imageUrl,
     required String coverImageUrl,
-    // required String gender
+    required String location,
   }) async {
     bool status = false;
 
@@ -40,7 +40,7 @@ class Auth {
           "uid": credential.user!.uid,
 
           // "country": country,
-          // "province": province,
+          "location": location,
           "gender": gender,
           "homeTown": homeTown,
           "birthday": birthday,

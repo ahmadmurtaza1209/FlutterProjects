@@ -25,7 +25,6 @@ class PostModel {
   // for post creation
   PostModel.withoutId(
       {required this.uid,
-      // required this.id,
       required this.postText,
       required this.profileImage,
       required this.postImage,
@@ -49,8 +48,8 @@ class PostModel {
     postText = data["postText"] ?? "";
     postImage = data["postImage"] ?? "";
     profileImage = data["profileImage"] ?? "";
-    likesCount = data["likesCount"] ?? 0;
-    commentsCount = data["commentsCount"] ?? 0;
+    // likesCount = data["likesCount"] ?? 0;
+    // commentsCount = data["commentsCount"] ?? 0;
     dateTime = data["dateTime"] ?? DateTime.now().toString();
   }
   // this will be used to convert PostModelNew.withoutId to Map<String,dynamic>
@@ -62,7 +61,6 @@ class PostModel {
     data['profileImage'] = profileImage;
     data['dateTime'] = dateTime;
     data["userName"] = userName;
-    // data["id"] = id;
 
     return data;
   }

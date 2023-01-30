@@ -8,12 +8,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final UserModel detail;
-  const EditProfileScreen({Key? key, required this.detail}) : super(key: key);
+
+  EditProfileScreen({
+    Key? key,
+    required this.detail,
+  }) : super(key: key);
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -32,6 +38,66 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       "homeTown": homeTownController.text,
       "birthday": dateOfBirthController.text,
       "gender": genderController.text,
+      "location": _currentAddress,
+    });
+  }
+
+  String? _currentAddress;
+  Position? _currentPosition;
+
+  Future<bool> _handleLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      Get.snackbar("Failed", "Please turn on your Location",
+          backgroundColor: Color.fromARGB(255, 227, 97, 41).withOpacity(0.1));
+      return Future.error('Location services are disabled.');
+    }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //     const SnackBar(content: Text('Location permissions are denied')));
+        return Future.error('Location permissions are denied');
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      //     content: Text(
+      //         'Location permissions are permanently denied, we cannot request permissions.')));
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+    return true;
+  }
+
+  Future<void> _getCurrentPosition() async {
+    final hasPermission = await _handleLocationPermission();
+
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+      setState(() => _currentPosition = position);
+      _getAddressFromLatLng(_currentPosition!);
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
+
+  Future<void> _getAddressFromLatLng(Position position) async {
+    await placemarkFromCoordinates(
+            _currentPosition!.latitude, _currentPosition!.longitude)
+        .then((List<Placemark> placemarks) {
+      Placemark place = placemarks[0];
+      setState(() {
+        _currentAddress =
+            '${place.street}, ${place.subAdministrativeArea}, ${place.administrativeArea}, ${place.country}';
+      });
+    }).catchError((e) {
+      debugPrint(e);
     });
   }
 
@@ -327,8 +393,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         right: width * 0.05,
                         top: height * 0.02),
                     child: Container(
+                      width: width * 0.8,
+                      // color: Colors.blue,
                       child: Text(
                         widget.detail.firstName,
+                        overflow: TextOverflow.clip,
                         style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -686,7 +755,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                           ),
                           title: Text(
-                            "Shadman Market",
+                            "${_currentAddress ?? ""}",
                             style: TextStyle(color: Colors.black, fontSize: 16),
                           ),
                           subtitle: Text(
@@ -698,7 +767,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           trailing: InkWell(
                               splashColor: Colors.transparent,
                               highlightColor: Colors.transparent,
-                              onTap: () {},
+                              onTap: () {
+                                _getCurrentPosition();
+                              },
                               child: Icon(
                                 Icons.edit,
                                 size: 25,
